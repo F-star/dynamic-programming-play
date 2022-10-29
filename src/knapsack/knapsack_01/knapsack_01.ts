@@ -139,3 +139,41 @@ export function knapsackWays(weight: number[], w: number): number {
 
   return dp[n - 1][w];
 }
+/**
+ * 能装入的最大价值
+ *
+ * （二维费用问题）有 n 个物品，它们的重量为 weight[i]，对应的价值为 value[i]，在不超过背包总重量 w 的情况下，求能装入的最大价值。
+ * @param weight 各个物品的重量
+ * @param value 各个物品的价值
+ * @param w 背包可以装的最大总重量
+ * @returns 能装入的最大价值
+ */
+export function knapsackMaxValue(weight: number[], value: number[], w: number): number {
+  const n = weight.length;
+  // 初始化 number 类型的二维数组，范围：[n][w + 1]
+  const dp: number[][] = new Array(n);
+  for (let i = 0; i < n; i++) {
+    dp[i] = new Array(w + 1).fill(0);
+  }
+
+  dp[0][0] = 0; // 不装入
+  if (weight[0] <= w) { // 装入 weight[0]，不能越界。
+    dp[0][weight[0]] = value[0]; // 装入第一个
+  }
+
+  for (let i = 1; i < n; i++) {
+    for (let j = 0; j <= w; j++) {
+      dp[i][j] = dp[i - 1][j];
+      if (j - weight[i] >= 0) {
+        dp[i][j] = Math.max(dp[i - 1][j], dp[i - 1][j - weight[i]] + value[i]);
+      }
+    }
+  }
+
+  let max = 0;
+  for (let j = 0; j <= w; j++) {
+    max = Math.max(max, dp[n - 1][j]);
+  }
+  return max;
+  // 上面这样写是为了照顾其他语言的读者，可以直接用 Math.max(...dp[n - 1])，更短一些
+}
